@@ -35,8 +35,12 @@ class MealPlanBase(BaseModel):
     status: MealPlanStatus = MealPlanStatus.DRAFT
     days: List[DayPlan]
 
-class MealPlanCreate(MealPlanBase):
-    pass
+class MealPlanCreate(BaseModel):
+    patient_id: str
+    week_start: date
+    notes: Optional[str] = None
+    status: MealPlanStatus = MealPlanStatus.DRAFT
+    days: List[DayPlan]
 
 class MealPlanUpdate(BaseModel):
     notes: Optional[str] = None

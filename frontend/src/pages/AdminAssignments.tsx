@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { assignmentsApi, adminApi } from '../services/api'
 
+interface User {
+  id: string
+  email: string
+  phone: string
+  role: 'patient' | 'nutritionist' | 'admin'
+  status: 'active' | 'suspended'
+  created_at: string
+  updated_at: string
+}
+
 export default function AdminAssignments() {
-  const [assignments, setAssignments] = useState([])
-  const [users, setUsers] = useState([])
+  const [assignments, setAssignments] = useState<any[]>([])
+  const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     patient_id: '',
@@ -25,7 +35,7 @@ export default function AdminAssignments() {
         console.log('AdminAssignments: Fetching users...')
         const usersData = await adminApi.getUsers()
         console.log('AdminAssignments: Users data:', usersData)
-        setUsers(usersData.items || [])
+        setUsers(usersData || [])
       } catch (error) {
         console.error('AdminAssignments: Error fetching data:', error)
       } finally {
@@ -67,8 +77,17 @@ export default function AdminAssignments() {
     }
   }
 
-  const getPatients = () => users.filter(user => user.role === 'patient')
-  const getNutritionists = () => users.filter(user => user.role === 'nutritionist')
+  const getPatients = () => {
+    const patients = users.filter(user => user.role === 'patient')
+    console.log('Filtered patients:', patients)
+    return patients
+  }
+  
+  const getNutritionists = () => {
+    const nutritionists = users.filter(user => user.role === 'nutritionist')
+    console.log('Filtered nutritionists:', nutritionists)
+    return nutritionists
+  }
 
   if (loading) {
     return (

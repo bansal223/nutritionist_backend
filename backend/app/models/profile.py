@@ -27,7 +27,7 @@ class PatientProfileBase(BaseModel):
     medical_notes: Optional[str] = None
 
 class PatientProfileCreate(PatientProfileBase):
-    user_id: str
+    pass
 
 class PatientProfileUpdate(BaseModel):
     first_name: Optional[str] = Field(None, min_length=1, max_length=50)
@@ -53,7 +53,7 @@ class NutritionistProfileBase(BaseModel):
     verified: bool = False
 
 class NutritionistProfileCreate(NutritionistProfileBase):
-    user_id: str
+    pass
 
 class NutritionistProfileUpdate(BaseModel):
     registration_no: Optional[str] = Field(None, min_length=1, max_length=50)

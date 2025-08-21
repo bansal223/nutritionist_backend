@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Nutritionist Platform"
     DEBUG: bool = True
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:3001"
     
     @property
     def allowed_hosts_list(self) -> List[str]:

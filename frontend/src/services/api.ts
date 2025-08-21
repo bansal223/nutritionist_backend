@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8001/api/v1'
+const API_BASE_URL = 'http://localhost:8000/api/v1'
 
 // Create axios instance
 const api = axios.create({
@@ -117,6 +117,11 @@ export const patientsApi = {
     }
   },
 
+  createProfile: async (profileData: any) => {
+    const response = await api.post('/patients/profile', profileData)
+    return response.data
+  },
+
   updateProfile: async (profileData: any) => {
     const response = await api.put('/patients/profile', profileData)
     return response.data
@@ -152,6 +157,11 @@ export const nutritionistsApi = {
     return response.data
   },
 
+  updateProfile: async (profileData: any) => {
+    const response = await api.put('/nutritionists/profile', profileData)
+    return response.data
+  },
+
   getPatients: async (limit = 20, skip = 0) => {
     console.log('Calling nutritionistsApi.getPatients...')
     try {
@@ -166,6 +176,31 @@ export const nutritionistsApi = {
 
   getPatientProgress: async (patientId: string, limit = 10, skip = 0) => {
     const response = await api.get(`/nutritionists/patients/${patientId}/progress?limit=${limit}&skip=${skip}`)
+    return response.data
+  },
+
+  getDashboardStats: async () => {
+    const response = await api.get('/nutritionists/dashboard/stats')
+    return response.data
+  },
+
+  getMealPlans: async (limit = 20, skip = 0, patientId?: string) => {
+    const params = new URLSearchParams()
+    params.append('limit', limit.toString())
+    params.append('skip', skip.toString())
+    if (patientId) params.append('patient_id', patientId)
+    
+    const response = await api.get(`/nutritionists/meal-plans?${params}`)
+    return response.data
+  },
+
+  getProgressSummary: async () => {
+    const response = await api.get('/nutritionists/progress/summary')
+    return response.data
+  },
+
+  getAnalytics: async () => {
+    const response = await api.get('/nutritionists/analytics/overview')
     return response.data
   },
 }
@@ -226,6 +261,17 @@ export const progressApi = {
 
   getSummary: async (patientId: string) => {
     const response = await api.get(`/progress/summary/${patientId}`)
+    return response.data
+  },
+
+  // Enhanced progress endpoints for nutritionists
+  getNutritionistOverview: async (limit = 20, skip = 0) => {
+    const response = await api.get(`/progress/nutritionist/overview?limit=${limit}&skip=${skip}`)
+    return response.data
+  },
+
+  getNutritionistAnalytics: async (timePeriod = 'month') => {
+    const response = await api.get(`/progress/nutritionist/analytics?time_period=${timePeriod}`)
     return response.data
   },
 }

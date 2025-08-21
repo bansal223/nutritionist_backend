@@ -33,7 +33,7 @@ async def create_meal_plan(
     # Check if meal plan already exists for this week
     existing_plan = await meal_plans_collection.find_one({
         "patient_id": ObjectId(meal_plan_data.patient_id),
-        "week_start": meal_plan_data.week_start
+        "week_start": datetime.combine(meal_plan_data.week_start, datetime.min.time())  # Convert date to datetime for query
     })
     
     if existing_plan:
@@ -46,10 +46,10 @@ async def create_meal_plan(
     meal_plan_doc = {
         "patient_id": ObjectId(meal_plan_data.patient_id),
         "nutritionist_id": current_user["_id"],
-        "week_start": meal_plan_data.week_start,
+        "week_start": datetime.combine(meal_plan_data.week_start, datetime.min.time()),  # Convert date to datetime
         "notes": meal_plan_data.notes,
         "status": meal_plan_data.status,
-        "days": meal_plan_data.days,
+        "days": [day.dict() for day in meal_plan_data.days],  # Convert Pydantic models to dictionaries
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
@@ -61,7 +61,7 @@ async def create_meal_plan(
         "id": str(meal_plan_doc["_id"]),
         "patient_id": str(meal_plan_doc["patient_id"]),
         "nutritionist_id": str(meal_plan_doc["nutritionist_id"]),
-        "week_start": meal_plan_doc["week_start"],
+        "week_start": meal_plan_doc["week_start"].date() if isinstance(meal_plan_doc["week_start"], datetime) else meal_plan_doc["week_start"],
         "notes": meal_plan_doc["notes"],
         "status": meal_plan_doc["status"],
         "days": meal_plan_doc["days"],
@@ -92,6 +92,11 @@ async def update_meal_plan(
     
     # Update meal plan
     update_data = meal_plan_data.dict(exclude_unset=True)
+    
+    # Convert days to dictionaries if present
+    if "days" in update_data and update_data["days"]:
+        update_data["days"] = [day.dict() for day in update_data["days"]]
+    
     update_data["updated_at"] = datetime.utcnow()
     
     await meal_plans_collection.update_one(
@@ -106,7 +111,7 @@ async def update_meal_plan(
         "id": str(updated_plan["_id"]),
         "patient_id": str(updated_plan["patient_id"]),
         "nutritionist_id": str(updated_plan["nutritionist_id"]),
-        "week_start": updated_plan["week_start"],
+        "week_start": updated_plan["week_start"].date() if isinstance(updated_plan["week_start"], datetime) else updated_plan["week_start"],
         "notes": updated_plan.get("notes"),
         "status": updated_plan["status"],
         "days": updated_plan["days"],
@@ -150,7 +155,7 @@ async def get_meal_plans(
             "id": str(plan["_id"]),
             "patient_id": str(plan["patient_id"]),
             "nutritionist_id": str(plan["nutritionist_id"]),
-            "week_start": plan["week_start"],
+            "week_start": plan["week_start"].date() if isinstance(plan["week_start"], datetime) else plan["week_start"],
             "status": plan["status"],
             "total_calories": total_calories,
             "total_protein": total_protein,
@@ -183,7 +188,7 @@ async def get_meal_plan(
         "id": str(meal_plan["_id"]),
         "patient_id": str(meal_plan["patient_id"]),
         "nutritionist_id": str(meal_plan["nutritionist_id"]),
-        "week_start": meal_plan["week_start"],
+        "week_start": meal_plan["week_start"].date() if isinstance(meal_plan["week_start"], datetime) else meal_plan["week_start"],
         "notes": meal_plan.get("notes"),
         "status": meal_plan["status"],
         "days": meal_plan["days"],

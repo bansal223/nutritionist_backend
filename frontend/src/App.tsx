@@ -1,13 +1,18 @@
+import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import PatientDashboard from './pages/PatientDashboard'
+import PatientProfile from './pages/PatientProfile'
+import PatientMealPlans from './pages/PatientMealPlans'
+import PatientProgress from './pages/PatientProgress'
 import NutritionistDashboard from './pages/NutritionistDashboard'
 import NutritionistPatients from './pages/NutritionistPatients'
 import NutritionistMealPlans from './pages/NutritionistMealPlans'
 import NutritionistProgress from './pages/NutritionistProgress'
+import NutritionistProfile from './pages/NutritionistProfile'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminAssignments from './pages/AdminAssignments'
 import Layout from './components/Layout'
@@ -48,7 +53,12 @@ function AppRoutes() {
         
         <Route path="patient/*" element={
           <ProtectedRoute allowedRoles={['patient']}>
-            <PatientDashboard />
+            <Routes>
+              <Route index element={<PatientDashboard />} />
+              <Route path="profile" element={<PatientProfile />} />
+              <Route path="meal-plans" element={<PatientMealPlans />} />
+              <Route path="progress" element={<PatientProgress />} />
+            </Routes>
           </ProtectedRoute>
         } />
         
@@ -56,6 +66,7 @@ function AppRoutes() {
           <ProtectedRoute allowedRoles={['nutritionist']}>
             <Routes>
               <Route index element={<NutritionistDashboard />} />
+              <Route path="profile" element={<NutritionistProfile />} />
               <Route path="patients" element={<NutritionistPatients />} />
               <Route path="meal-plans" element={<NutritionistMealPlans />} />
               <Route path="progress" element={<NutritionistProgress />} />
